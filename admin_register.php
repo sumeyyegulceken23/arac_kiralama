@@ -8,13 +8,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Parolayı hashle
 
-    // Veritabanına yeni admin kaydı ekle
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'admin')");
-    
-    if ($stmt->execute([$username, $email, $password])) {
-        echo "<script>alert('Admin kaydı başarıyla oluşturuldu!'); window.location.href='admin_login.php';</script>";
+    // E-posta kontrolü
+    $emailCheck = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $emailCheck->execute([$email]);
+
+    if ($emailCheck->rowCount() > 0) {
+        echo "<script>alert('Bu e-posta adresi zaten kayıtlı.');</script>";
     } else {
-        echo "<script>alert('Kayıt sırasında bir hata oluştu.');</script>";
+        // Veritabanına yeni admin kaydı ekle
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'admin')");
+        
+        if ($stmt->execute([$username, $email, $password])) {
+            echo "<script>alert('Admin kaydı başarıyla oluşturuldu!'); window.location.href='admin_login.php';</script>";
+        } else {
+            echo "<script>alert('Kayıt sırasında bir hata oluştu.');</script>";
+        }
     }
 }
 ?>

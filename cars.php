@@ -31,10 +31,11 @@ $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php echo $car['is_available'] ? 'Uygun' : 'Kiralanmış'; ?>
                             </p>
                             <?php if ($car['is_available']): ?>
-                                <a href="rent.php?car_id=<?php echo $car['id']; ?>" class="btn btn-primary">Kirala</a>
-                            <?php else: ?>
-                                <button class="btn btn-secondary" disabled>Kiralanmış</button>
-                            <?php endif; ?>
+                            <a href="rent.php?car_id=<?php echo $car['id']; ?>" class="btn btn-primary">Kirala</a>
+                        <?php else: ?>
+                            <button class="btn btn-secondary" disabled>Kiralanmış</button>
+                        <?php endif; ?>
+
                         </div>
                     </div>
                 </div>

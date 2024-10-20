@@ -4,12 +4,23 @@ include 'db.php'; // Veritabanı bağlantısını ekliyoruz
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);  // Şifreyi hashliyoruz
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Şifreyi hashliyoruz
 
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-    $stmt->execute([$username, $email, $password]);
+    // E-posta kontrolü
+    $emailCheck = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $emailCheck->execute([$email]);
 
-    echo "Kayıt başarılı! Giriş yapmak için <a href='login.php'>tıklayın</a>.";
+    if ($emailCheck->rowCount() > 0) {
+        echo "Bu e-posta adresi zaten kayıtlı.";
+    } else {
+        // Kullanıcıyı kaydet
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+        if ($stmt->execute([$username, $email, $password])) {
+            echo "Kayıt başarılı! Giriş yapmak için <a href='login.php'>tıklayın</a>.";
+        } else {
+            echo "Kayıt sırasında bir hata oluştu.";
+        }
+    }
 }
 ?>
 
